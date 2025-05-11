@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: radial-gradient(ellipse at bottom, #1d1a39 0%, #2d2e57 40%, #4b306a 70%, #7c2f6a 100%);
+      background-size: 800% 800%;
+      animation: galaxyShift 30s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    @keyframes galaxyShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      z-index: 0;
+    }
+
+    .blur-shape {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: rgba(255, 255, 255, 0.05);
+      filter: blur(100px);
+      border-radius: 50%;
+      animation: moveShape 60s linear infinite alternate;
+    }
+
+    .blur-shape:nth-child(1) {
+      top: 10%;
+      left: 20%;
+    }
+
+    .blur-shape:nth-child(2) {
+      bottom: 20%;
+      right: 15%;
+    }
+
+    .blur-shape:nth-child(3) {
+      top: 50%;
+      left: 60%;
+    }
+
+    @keyframes moveShape {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(-50px, 50px);
+      }
+    }
+
+    .container {
+      position: relative;
+      background: rgba(29, 26, 57, 0.85);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      animation: fadeIn 1s ease-out;
+      z-index: 1;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo-img {
+      width: 250px;
+      height: px;
+      margin-bottom: 15px;
+    }
+
+    .question {
+      font-size: 1.3rem;
+      margin: 20px 0;
+      min-height: 60px;
+      transition: all 0.5s ease-in-out;
+      color: #ffffff;
+    }
+
+    .btn {
+      background: linear-gradient(90deg, #8E54E9, #4776E6);
+      border: none;
+      color: white;
+      font-size: 1rem;
+      padding: 12px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:hover {
+      background: linear-gradient(90deg, #49274A, #6D597A);
+      transform: scale(1.05);
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #ffffff;
+      opacity: 0.7;
+      text-align: center;
+      padding: 10px;
+      z-index: 1;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+        margin: 20px;
+      }
+    }
+
+    .welcome-message {
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stars">
+    <div class="blur-shape"></div>
+    <div class="blur-shape"></div>
+    <div class="blur-shape"></div>
+  </div>
+
+  <div class="container">
+    <div id="welcomePage">
+      <div class="welcome-message">
+        Welcome to <strong>Convo</strong>! A place to connect, share your thoughts, and take on fun challenges!
+      </div>
+      <button class="btn" onclick="startApp()">Start</button>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+      <img src="convologo.png" alt="Convo Logo" class="logo-img">
+      <div class="question" id="questionDisplay">Click the button to pick a question.</div>
+      <br><br>
+      <button class="btn" onclick="generateQuestion()">Pick a Question</button>
+      <div id="challengeDisplay" style="margin-top: 20px; color: white; font-size: 1rem;"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2025 All rights reserved. Developed by HJFLORINO.
+  </div>
+
+  <script>
+    const allQuestions = [
+"What’s one decision in your life that changed you forever?",
+
+"When was the last time you truly felt at peace with yourself?",
+
+"What’s the most important lesson you’ve learned from a mistake?",
+
+"What’s a dream you gave up on, and would you ever consider trying again?",
+
+"Is there someone in your life who you’ve never truly thanked? What would you say to them now?",
+
+"What’s the best advice you’ve ever received, and how has it shaped your life?",
+
+"If you could go back and tell your younger self one thing, what would it be?",
+
+"What part of your life are you most proud of, and why?",
+
+"Have you ever experienced a moment that made you believe in something bigger than yourself?",
+
+"What’s something you wish people understood about you that they might not know?",
+
+"If you could relive one moment in your life, which one would it be and why?",
+
+"What’s a risk you took that turned out to be worth it?",
+
+"What’s the one thing you hope to achieve before your life is over?",
+
+"If love could be measured, how would you say you’ve loved others in your life?",
+
+"What’s one piece of advice you would give to someone feeling lost or unsure about their path?",
+
+"What’s the happiest memory of your childhood?",
+
+"Who in your life has had the biggest impact on who you are today?",
+
+"What’s something you’ve always wanted to do but haven’t had the chance to?",
+
+"If you could change one thing about the world, what would it be?",
+
+"When was the last time you cried, and why?",
+
+"What’s the most meaningful gift you’ve ever received?",
+
+"What’s one thing you wish you could do every day?",
+
+"What would you do if you weren’t afraid?",
+
+"What’s the hardest lesson you’ve had to learn in life?",
+
+"How do you cope with the difficult times in life?",
+
+"What’s one thing that always makes you feel better when you’re down?",
+
+"Who do you turn to when you need advice or comfort?",
+
+"What’s something that has changed your perspective on life?",
+
+"What do you value the most in your friendships?",
+
+"If you could only remember one thing about your life, what would it be?",
+
+"What’s a fear you’ve conquered?",
+
+"When was the last time you felt truly seen by someone?",
+
+"What’s something that always brings you joy, no matter how small?",
+
+"What’s a memory you cherish from your teenage years?",
+
+"What are you most grateful for in this moment?",
+
+"What’s a piece of advice you would give your future self?",
+
+"What does your perfect day look like?",
+
+"What’s a mistake you made that taught you a valuable lesson?",
+
+"When was the last time you felt truly inspired?",
+
+"What’s one thing you’re afraid of never experiencing?",
+
+"What do you think is the key to a fulfilling life?",
+
+"If you could change one event in your life, what would it be?",
+
+"What’s a decision that shaped your future in a significant way?",
+
+"What do you consider your greatest achievement?",
+
+"What’s one thing you’ve always wanted to say but haven’t yet?",
+
+"How do you stay motivated during tough times?",
+
+"What’s a book, movie, or song that changed the way you see life?",
+
+"How do you know when you’ve made the right choice?",
+
+"What’s something you believe in strongly, even if others don’t?",
+
+"What’s a habit you’ve developed that has positively impacted your life?",
+
+"What’s one thing that makes you feel truly alive?",
+
+"What’s the most important thing you’ve learned about love?",
+
+"How do you want people to remember you?",
+
+"What’s one piece of wisdom you wish you had when you were younger?",
+
+"What’s a place you’ve always wanted to visit and why?",
+
+"What’s a childhood dream you’ve never let go of?",
+
+"What does success mean to you?",
+
+"What’s something you’re passionate about that others might not know?",
+
+"What’s one mistake you’ll never make again?",
+
+"How do you handle change in your life?",
+
+"What’s one lesson you’ve learned from your family?",
+
+"What are you most proud of in your career or life?",
+
+"What does friendship mean to you?",
+
+"What’s the most meaningful conversation you’ve ever had?",
+
+"How do you show love to those you care about?",
+
+"What’s a challenge you’ve faced that made you stronger?",
+
+"What’s one thing you wish people knew about your struggles?",
+
+"What’s the biggest risk you’ve taken in your life?",
+
+"What does happiness look like to you?",
+
+"If you could spend a day with anyone, dead or alive, who would it be?",
+
+"What’s something you hope to leave behind as your legacy?",
+
+"What’s the most beautiful thing you’ve ever witnessed?",
+
+"How do you stay grounded in the chaos of life?",
+
+"What’s one thing you’ve learned from a tough breakup or loss?",
+
+"What’s one thing you’re afraid of losing?",
+
+"How do you define a meaningful life?",
+
+"What do you wish you could change about your past?",
+
+"What’s one thing you wish you had told someone before they left?",
+
+"What’s a challenge you’re currently working through?",
+
+"What’s the most comforting thing someone has ever said to you?",
+
+"What does home feel like to you?",
+
+"What’s a quote that resonates with you deeply?",
+
+"What’s one thing you love about yourself?",
+
+"What’s the most important relationship in your life?",
+
+"How do you balance your personal goals and relationships?",
+
+"What’s something you’ve always wanted to say to a stranger but never did?",
+
+"What’s something you’ve learned about forgiveness?",
+
+"What’s a moment in your life you’ll never forget?",
+
+"What’s one thing you want to accomplish this year?",
+
+"How do you keep going when things feel hopeless?",
+
+"What’s a difficult decision you’ve had to make?",
+
+"What’s something that makes you feel at peace?",
+
+"What does being true to yourself mean?",
+
+"What’s one thing you’re thankful for today?",
+
+"What’s a childhood memory that always makes you smile?",
+
+"What does self-care look like for you?",
+
+"What’s the greatest gift you’ve given to someone?",
+
+"What’s something you do to cope with anxiety or stress?",
+
+"What’s one thing you’ve learned from someone who disagrees with you?",
+
+"What’s the biggest change you’ve experienced in your life?",
+
+"How do you celebrate your achievements, big or small?",
+
+"What’s one thing you want to say but can’t find the words for?",
+
+"What’s a fear you still haven’t overcome?",
+
+"What’s a song that always makes you feel something?",
+
+"What’s something you wish you could let go of?",
+
+"What’s one thing you’ve never told anyone but would like to share?",
+
+"What’s something that makes you feel connected to others?",
+
+"What’s one habit you’re trying to break?",
+
+"What’s the best thing about being alone?",
+
+"What’s a moment that changed your perspective on love?",
+
+"What’s a piece of advice that has stuck with you?",
+
+"What do you wish you had more time for?",
+
+"What does vulnerability mean to you?",
+
+"What’s something you wish you could forget?",
+
+"How do you show kindness to yourself?",
+
+"What’s the best decision you’ve ever made?",
+
+"What’s one thing you regret not doing sooner?",
+
+"What’s the most difficult thing you’ve had to forgive?",
+
+"What does peace of mind feel like to you?",
+
+"What’s the one thing that’s always made you feel loved?",
+
+"What’s the most valuable lesson you’ve learned from hardship?",
+
+"What’s a simple pleasure you can’t live without?",
+
+"What’s one thing you’re currently working on improving?",
+
+"What’s the hardest part about being vulnerable?",
+
+"What’s one moment that made you believe in yourself?",
+
+"What’s something you’ve always wanted to ask but never did?",
+
+"How do you express gratitude in your life?",
+
+"What’s one dream you have that you haven’t shared with anyone?",
+
+"What’s a lesson you learned from your parents or caregivers?",
+
+"What’s one thing you’ve learned about resilience?",
+
+"What’s a place that brings you peace?",
+
+"What’s a challenge you’re proud to have faced?",
+
+"What’s the most meaningful compliment you’ve ever received?",
+
+"What’s one thing that always lifts your spirits?",
+
+"What’s something you’ve realized about yourself recently?",
+
+"What’s one memory you’d like to revisit?",
+
+"What’s the hardest part about moving on?",
+
+"What’s something that always makes you feel grounded?",
+
+"What’s one thing you’re still waiting to figure out in life?",
+
+"What does inner peace mean to you?",
+
+"What’s the most memorable experience of your life?",
+
+"What’s one thing that brings you comfort in hard times?",
+
+"What’s something you’ve done that made you proud of yourself?",
+
+"What’s one piece of advice you’d give someone feeling stuck?",
+
+"What’s one thing that has shaped your view of the world?",
+
+"What’s something you do to nourish your soul?",
+
+"What’s one thing you’ve learned about letting go?",
+
+"What’s something you hope to accomplish in the next year?",
+
+"What’s the best part about being yourself?",
+
+"What’s one thing you want to be remembered for?",
+    ];
+
+    const allChallenges = [
+      "Spin around 5 times.",
+      "Do 10 push-ups.",
+      "Dance for 1 minute.",
+      "Try to juggle 3 things.",
+      "Take a selfie with the biggest smile.",
+      "Hop on one foot for 30 seconds."
+    ];
+
+    function startApp() {
+      document.getElementById('welcomePage').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    }
+
+    let toggle = false;
+
+    function generateQuestion() {
+      const random = allQuestions[Math.floor(Math.random() * allQuestions.length)];
+      const display = document.getElementById('questionDisplay');
+      toggle = !toggle;
+      display.style.opacity = 0;
+      setTimeout(() => {
+        display.textContent = random;
+        display.style.color = toggle ? '#FBE7E2' : '#ffffff';
+        document.querySelector('.container').style.background = toggle
+          ? 'rgba(76, 29, 149, 0.85)'
+          : 'rgba(29, 26, 57, 0.85)';
+        display.style.opacity = 1;
+
+        // After showing the question, show the challenge
+        showChallenge();
+      }, 300);
+    }
+
+    function showChallenge() {
+      const challenge = allChallenges[Math.floor(Math.random() * allChallenges.length)];
+      const challengeDisplay = document.getElementById('challengeDisplay');
+      challengeDisplay.textContent = `Your challenge: ${challenge}`;
+    }
+  </script>
+</body>
+
+</html>
